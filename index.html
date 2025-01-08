@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>dipesh gaming Website</title>
+    <style>
+        /* Body styling */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #1e1e2f, #2e2e44); /* Default gaming gradient */
+            color: #ffffff; /* Default text color */
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header section */
+        header {
+            background-color: #131325; /* Dark gaming vibe */
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #444;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #f05454; /* Highlight color */
+        }
+
+        /* Search bar */
+        #search-bar {
+            margin-top: 10px;
+            padding: 8px;
+            width: 80%;
+            max-width: 500px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: none;
+            background-color: #444;
+            color: #fff;
+        }
+
+        #search-bar::placeholder {
+            color: #888;
+        }
+
+        /* Main content */
+        .content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #f05454;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #d43f3f;
+            transform: scale(1.1);
+        }
+
+        /* Video Section */
+        .video-section {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        .video {
+            margin: 20px;
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 16 / 9; /* Maintain 16:9 ratio */
+            border: 2px solid #444;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .video:hover {
+            transform: scale(1.05);
+        }
+
+        /* Settings section */
+        #settings {
+            display: none; /* Hidden by default */
+            padding: 20px;
+            text-align: center;
+            background-color: #2e2e44;
+            border-top: 2px solid #444;
+            margin-top: 20px;
+        }
+
+        #settings label {
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+
+        #settings input[type="color"] {
+            margin: 10px 0;
+            padding: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #settings button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #f05454;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #settings button:hover {
+            background-color: #d43f3f;
+        }
+
+        /* Game section */
+        #game {
+            display: none;
+            padding: 20px;
+            text-align: center;
+            background-color: #2e2e44;
+            margin-top: 20px;
+            border-top: 2px solid #444;
+        }
+
+        #score {
+            font-size: 2em;
+            color: #f05454;
+        }
+
+        #clickButton {
+            padding: 20px 40px;
+            font-size: 1.5em;
+            background-color: #f05454;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease; /* Smooth transition for scaling */
+        }
+
+        #clickButton:active {
+            transform: scale(1.1); /* Animation for click */
+        }
+
+        #timer {
+            font-size: 1.5em;
+            color: #f05454;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #131325;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            color: #888;
+        }
+    </style>
+    <script>
+        let score = 0; // Initialize score
+        let timeLeft = 60; // 1 minute timer (60 seconds)
+        let timerInterval;
+
+        // Toggle settings section visibility
+        function toggleSettings() {
+            const settings = document.getElementById('settings');
+            // Toggle visibility
+            if (settings.style.display === 'none' || settings.style.display === '') {
+                settings.style.display = 'block';
+            } else {
+                settings.style.display = 'none';
+            }
+        }
+
+        // Update background and text colors
+        function updateColors() {
+            const bgColor = document.getElementById('bgColor').value;
+            const textColor = document.getElementById('textColor').value;
+            document.body.style.background = bgColor;
+            document.body.style.color = textColor;
+        }
+
+        // Start the game
+        function startGame() {
+            const gameSection = document.getElementById('game');
+            gameSection.style.display = 'block';
+            // Hide the main content after starting the game
+            document.querySelector('.content').style.display = 'none';
+            score = 0; // Reset score when starting the game
+            timeLeft = 60; // Reset timer to 60 seconds
+            updateScore();
+            startTimer(); // Start the timer
+        }
+
+        // Update score and display it
+        function updateScore() {
+            document.getElementById('score').innerText = 'Score: ' + score;
+        }
+
+        // Increase score on button click
+        function increaseScore() {
+            if (timeLeft > 0) { // Only increase score if time is left
+                score++;
+                updateScore();
+            }
+        }
+
+        // Start the 1-minute timer
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById('timer').innerText = 'Time Left: ' + timeLeft + 's';
+                } else {
+                    clearInterval(timerInterval); // Stop the timer when time runs out
+                    endGame(); // End the game
+                }
+            }, 1000); // Update every second
+        }
+
+        // End the game
+        function endGame() {
+            alert('Time\'s up! Your final score is: ' + score);
+            stopGame();
+        }
+
+        // Stop the game and go back to the main content
+        function stopGame() {
+            const gameSection = document.getElementById('game');
+            gameSection.style.display = 'none';
+            document.querySelector('.content').style.display = 'block';
+        }
+
+        // Search functionality
+        function searchContent() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const videos = document.querySelectorAll('.video');
+            videos.forEach(video => {
+                const title = video.querySelector('h3').innerText.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    video.style.display = 'block';
+                } else {
+                    video.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1> DIPESH GAMING ZONE 🗿</h1>
+        <input type="text" id="search-bar" placeholder="Search for a game..." onkeyup="searchContent()">
+    </header>
+
+    <div class="content">
+        <p>Welcome to the ultimate gaming experience! Choose your next adventure:</p>
+        <a href="#" class="button" onclick="startGame()">Start Game</a>
+        <a href="#" class="button" onclick="toggleSettings()">Settings</a>
+    </div>
+
+    <!-- Video Section -->
+    <div class="video-section">
+        <!-- Sekiro -->
+        <div class="video">
+            <h3>Sekiro: Shadows Die Twice</h3>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/Eb_AJU4sTUY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- RDR2 -->
+        <div class="video">
+            <h3>Red Dead Redemption 2</h3>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/IgBKD6U5RK4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Elden Ring -->
+        <div class="video">
+            <h3>Elden Ring</h3>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/XEac8JHmWdk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- Witcher 4 -->
+        <div class="video">
+            <h3>The Witcher 4</h3>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/yWMu6JeT2g8" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <!-- GTA 6 -->
+        <div class="video">
+            <h3>Grand Theft Auto 6</h3>
+            <iframe width="100%" height="315" src="https://www.youtube.com/embed/QdBZY2fkU-0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Game Section -->
+    <div id="game">
+        <h2>Click as fast as you can!</h2>
+        <p id="score">Score: 0</p>
+        <button id="clickButton" onclick="increaseScore()">Click Me!</button>
+        <p id="timer">Time Left: 60s</p>
+        <br>
+        <button onclick="stopGame()" style="margin-top: 20px;">Exit Game</button>
+    </div>
+
+    <!-- Settings Section -->
+    <div id="settings">
+        <h2>Settings</h2>
+        <label for="bgColor">Background Color:</label>
+        <input type="color" id="bgColor" value="#1e1e2f">
+        <br>
+        <label for="textColor">Text Color:</label>
+        <input type="color" id="textColor" value="#ffffff">
+        <br>
+        <button onclick="updateColors()">Apply Changes</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Gaming Zone. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
+
+<!-- Video Section -->
+<div class="video-section">
+    <!-- Sekiro -->
+    <div class="video">
+        <h3>Sekiro: Shadows Die Twice</h3>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/Eb_AJU4sTUY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- RDR2 -->
+    <div class="video">
+        <h3>Red Dead Redemption 2</h3>
+        <a href="https://store.steampowered.com/app/1174180/Red_Dead_Redemption_2/" target="_blank">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1174180/header.jpg" alt="Red Dead Redemption 2" width="100%" height="auto">
+        </a>
+    </div>
+
+    <!-- The Witcher 3 -->
+    <div class="video">
+        <h3>The Witcher 3: Wild Hunt</h3>
+        <a href="https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/" target="_blank">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/292030/header.jpg" alt="The Witcher 3" width="100%" height="auto">
+        </a>
+    </div>
+
+    <!-- GTA 5 -->
+    <div class="video">
+        <h3>Grand Theft Auto V</h3>
+        <a href="https://store.steampowered.com/app/271590/Grand_Theft_Auto_V/" target="_blank">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/271590/header.jpg" alt="GTA 5" width="100%" height="auto">
+        </a>
+    </div>
+
+    
+
+    <!-- CS:GO 2 -->
+    <div class="video">
+        <h3>Counter-Strike 2</h3>
+        <a href="https://store.steampowered.com/app/730/CounterStrike_2/" target="_blank">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/730/header.jpg" alt="Counter-Strike 2" width="100%" height="auto">
+        </a>
+    </div>
+
+    <!-- The Last of Us -->
+    <div class="video">
+        <h3>The Last of Us Part I</h3>
+        <a href="https://store.steampowered.com/app/1888930/The_Last_of_Us_Part_I/" target="_blank">
+            <img src="https://cdn.cloudflare.steamstatic.com/steam/apps/1888930/header.jpg" alt="The Last of Us Part I" width="100%" height="auto">
+        </a>
+    </div>
+</div>
+        <p><a href="https://store.steampowered.com/app/730/CounterStrike_2/" target="_blank">Play CS:GO 2</a></p>
+
+</div>
+
+<!-- Best Games -->
+<div class="video-section">
+    <!-- Sekiro: Shadows Die Twice -->
+    <div class="video">
+        <h3>Sekiro: Shadows Die Twice</h3>
+        <a href="https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice__GOTY_Edition/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/814380/capsule_616x353.jpg" alt="Sekiro: Shadows Die Twice" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/814380/Sekiro_Shadows_Die_Twice__GOTY_Edition/" target="_blank">Play Sekiro: Shadows Die Twice</a></p>
+    </div>
+
+    <!-- Elden Ring -->
+    <div class="video">
+        <h3>Elden Ring</h3>
+        <a href="https://store.steampowered.com/app/1245620/ELDEN_RING" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/1245620/capsule_616x353.jpg" alt="Elden Ring" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/1245620/ELDEN_RING" target="_blank">Play Elden Ring</a></p>
+    </div>
+
+    <!-- GTA 4 -->
+    <div class="video">
+        <h3>Grand Theft Auto IV</h3>
+        <a href="https://store.steampowered.com/app/12210/Grand_Theft_Auto_IV_The_Complete_Edition/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/12210/capsule_616x353.jpg" alt="GTA IV" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/12210/Grand_Theft_Auto_IV_The_Complete_Edition/" target="_blank">Play GTA IV</a></p>
+    </div>
+
+    <!-- A Way Out -->
+    <div class="video">
+        <h3>A Way Out</h3>
+        <a href="https://store.steampowered.com/app/1222700/A_Way_Out/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/1222700/capsule_616x353.jpg" alt="A Way Out" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/1222700/A_Way_Out/" target="_blank">Play A Way Out</a></p>
+    </div>
+
+    <!-- Indiana Jones -->
+    <div class="video">
+        <h3>Indiana Jones and the Great Circle</h3>
+        <a href="https://store.steampowered.com/app/2677660/Indiana_Jones_and_the_Great_Circle/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/2677660/capsule_616x353.jpg" alt="Indiana Jones" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/2677660/Indiana_Jones_and_the_Great_Circle/" target="_blank">Play Indiana Jones</a></p>
+    </div>
+</div>
+
+<!-- Free Games -->
+<div class="video-section">
+    <!-- CS:GO 2 -->
+    <div class="video">
+        <h3>Counter-Strike 2</h3>
+        <a href="https://store.steampowered.com/app/730/CounterStrike_2/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/730/capsule_616x353.jpg" alt="Counter-Strike 2" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/730/CounterStrike_2/" target="_blank">Play CS:GO 2</a></p>
+    </div>
+
+    <!-- Marvel Rivals -->
+    <div class="video">
+        <h3>Marvel Rivals</h3>
+        <a href="https://store.steampowered.com/app/2767030/Marvel_Rivals/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/2767030/capsule_616x353.jpg" alt="Marvel Rivals" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/2767030/Marvel_Rivals/" target="_blank">Play Marvel Rivals</a></p>
+    </div>
+
+    <!-- Dota 2 -->
+    <div class="video">
+        <h3>Dota 2</h3>
+        <a href="https://store.steampowered.com/app/570/Dota_2/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/570/capsule_616x353.jpg" alt="Dota 2" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/570/Dota_2/" target="_blank">Play Dota 2</a></p>
+    </div>
+
+    <!-- PUBG -->
+    <div class="video">
+        <h3>PUBG: Battlegrounds</h3>
+        <a href="https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/" target="_blank">
+            <img src="https://cdn.akamai.steamstatic.com/steam/apps/578080/capsule_616x353.jpg" alt="PUBG" style="width: 100%; border-radius: 10px;">
+        </a>
+        <p><a href="https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/" target="_blank">Play PUBG</a></p>
+    </div>
+</div>
+
+<!-- Game of the Year 2024 -->
+<div class="video">
+    <h3>Game of the Year 2024</h3>
+    <iframe width="100%" height="315" src="https://www.youtube.com/embed/LfnUQ-qKsdQ?si=u5BTYcbxCqJEUZHl" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
+
+<!-- Epic Games Mystery Game 2024 Section -->
+<div class="video-section">
+    <!-- Epic Game 1 -->
+    <div class="video">
+        <h3>Epic Games Mystery Game 1</h3>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/LDXIIAJ3QDo?si=gBXC296Q0tlpiH6z" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- Epic Game 2 -->
+    <div class="video">
+        <h3>Epic Games Mystery Game 2</h3>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/rG7caY574ag?si=gGLFvmtGOPrLyYYh" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- Epic Game 3 -->
+    <div class="video">
+        <h3>Epic Games Mystery Game 3</h3>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/flSCF2CpeBI?si=j5Q9wwUBQ0giG4c_" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+    <!-- Epic Game 4 -->
+    <div class="video">
+        <h3>Epic Games Mystery Game 4</h3>
+        <iframe width="100%" height="315" src="https://www.youtube.com/embed/htNw2MYVxWA?si=2BGq-jXJBmLkw3mv" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+
+
